@@ -1,0 +1,28 @@
+$center: center;
+
+.import_export_wrapper {
+  display: flex;
+  justify-content: $center;
+  align-items: $center;
+  height: 100%;
+}
+.radio-buttons-group {
+  margin-left: 5%;
+}
+.info-text {
+  color: #3366ff;
+  font-weight: 600;
+}
+
+.half-width {
+  width: 50%;
+}
+.my-drop-zone {
+  border: dotted 3px lightgray;
+}
+.nv-file-over {
+  border: dotted 3px red;
+} /* Default class applied to drop zones on over */
+.another-file-over-class {
+  border: dotted 3px green;
+}

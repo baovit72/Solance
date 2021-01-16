@@ -1,0 +1,163 @@
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" nbSpinnerSize="large">
+	<nb-card-header>
+		<div class="header-selector-wrapper">
+			<h4>{{ 'APPROVAL_REQUEST_PAGE.HEADER' | translate }}</h4>
+			<div class="header-selector-wrapper">
+				<ga-layout-selector
+					componentName="{{ viewComponentName }}"
+				></ga-layout-selector>
+			</div>
+		</div>
+	</nb-card-header>
+	<nb-card-body>
+		<div class="mb-3">
+			<ng-template ngxPermissionsOnly="REQUEST_APPROVAL_EDIT">
+				<button
+					(click)="save(true)"
+					nbButton
+					status="success"
+					class="mr-2"
+				>
+					<nb-icon class="mr-1" icon="plus-outline"></nb-icon
+					>{{ 'BUTTONS.ADD' | translate }}
+				</button>
+			</ng-template>
+			<ng-container *ngIf="dataLayoutStyle === 'TABLE'">
+				<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+			</ng-container>
+			<ng-template ngxPermissionsOnly="APPROVALS_POLICY_VIEW">
+				<button
+					class="float-right"
+					nbButton
+					status="primary"
+					(click)="manageApprovalPolicy()"
+				>
+					{{ 'APPROVAL_REQUEST_PAGE.APPROVAL_POLICY' | translate }}
+				</button>
+			</ng-template>
+		</div>
+
+		<ng2-smart-table
+			*ngIf="dataLayoutStyle === 'TABLE'"
+			class="tags-table"
+			(userRowSelect)="selectRequestApproval($event)"
+			[settings]="settingsSmartTable"
+			[source]="smartTableSource"
+			style="cursor: pointer"
+			#requestApprovalTable
+		>
+		</ng2-smart-table>
+		<ul class="flex-container" *ngIf="dataLayoutStyle === 'CARDS_GRID'">
+			<li class="flex-item" *ngFor="let x of requestApprovalData">
+				<div class="info-line">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.APPROVAL_REQUEST_NAME'
+							| translate
+					}}</span>
+					<span class="info-value">{{ x.name }}</span>
+				</div>
+				<div class="info-line">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.APPROVAL_REQUEST_MIN_COUNT'
+							| translate
+					}}</span>
+					<span class="info-value">{{ x.min_count }}</span>
+				</div>
+				<div class="info-line">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.APPROVAL_REQUEST_APPROVAL_POLICY'
+							| translate
+					}}</span>
+					<span class="info-value">{{ x.approvalPolicy.name }}</span>
+				</div>
+				<div class="info-line">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.CREATED_BY' | translate
+					}}</span>
+					<span class="info-value">{{ x.createdByName }}</span>
+				</div>
+				<div class="info-line" [ngSwitch]="x.status">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.APPROVAL_REQUEST_STATUS'
+							| translate
+					}}</span>
+					<span class="badge-warning-card" *ngSwitchCase="1">
+						{{ 'APPROVAL_REQUEST_PAGE.REQUESTED' | translate }}
+					</span>
+					<span class="badge-success-card" *ngSwitchCase="2">
+						{{ 'APPROVAL_REQUEST_PAGE.APPROVED' | translate }}
+					</span>
+					<span class="badge-danger-card" *ngSwitchCase="3">
+						{{ 'APPROVAL_REQUEST_PAGE.REFUSED' | translate }}
+					</span>
+				</div>
+				<div class="info-line" style="height: 56px">
+					<span class="info-meta">{{
+						'APPROVAL_REQUEST_PAGE.ACTION' | translate
+					}}</span>
+					<div *ngIf="x.status === 1">
+						<button
+							nbButton
+							status="success"
+							(click)="approval(x)"
+							class="mr-3"
+							[size]="'tiny'"
+						>
+							{{ 'APPROVAL_REQUEST_PAGE.APPROVE' | translate }}
+						</button>
+						<button
+							nbButton
+							status="danger"
+							(click)="refuse(x)"
+							[size]="'tiny'"
+						>
+							{{ 'APPROVAL_REQUEST_PAGE.REFUSE' | translate }}
+						</button>
+					</div>
+				</div>
+				<nb-card-footer class="card-footer">
+					<ng-container
+						*ngTemplateOutlet="
+							actionButtons;
+							context: {
+								buttonSize: 'tiny',
+								selectedItem: x
+							}
+						"
+					>
+					</ng-container>
+				</nb-card-footer>
+			</li>
+		</ul>
+	</nb-card-body>
+</nb-card>
+<ng-template
+	#actionButtons
+	let-buttonSize="buttonSize"
+	let-selectedItem="selectedItem"
+>
+	<ng-template ngxPermissionsOnly="REQUEST_APPROVAL_EDIT">
+		<button
+			(click)="save(false, selectedItem)"
+			nbButton
+			status="info"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="edit-outline"></nb-icon>
+			{{ 'BUTTONS.EDIT' | translate }}
+		</button>
+	</ng-template>
+	<button
+		(click)="delete(selectedItem)"
+		nbButton
+		status="danger"
+		class="mr-2"
+		[disabled]="!selectedItem && disableButton"
+		[size]="buttonSize || 'medium'"
+	>
+		<nb-icon class="mr-1" icon="archive-outline"> </nb-icon>
+		{{ 'BUTTONS.DELETE' | translate }}
+	</button>
+</ng-template>

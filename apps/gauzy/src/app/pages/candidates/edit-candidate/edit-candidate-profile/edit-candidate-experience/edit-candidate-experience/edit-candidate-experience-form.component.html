@@ -1,0 +1,159 @@
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" nbSpinnerSize="large">
+	<nb-card-header class="header">
+		<div class="btn" *ngIf="!showAddCard">
+			<button
+				nbButton
+				status="success"
+				*ngIf="!showAddCard"
+				(click)="add()"
+				class="mr-2"
+			>
+				<nb-icon class="mr-1" icon="plus-outline"></nb-icon>
+				{{ 'BUTTONS.ADD' | translate }}
+			</button>
+			<ng-container
+				*ngIf="
+					dataLayoutStyle === 'TABLE' &&
+					!showAddCard &&
+					experienceList?.length
+				"
+			>
+				<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+			</ng-container>
+		</div>
+
+		<ga-layout-selector
+			*ngIf="!showAddCard"
+			componentName="{{ viewComponentName }}"
+		></ga-layout-selector>
+		<div *ngIf="showAddCard" class="row m-0 w-100">
+			<form class="col-10" [formGroup]="form" *ngIf="form">
+				<div formArrayName="experiences">
+					<div
+						*ngFor="let exp of experiences?.controls; let i = index"
+					>
+						<div [formGroupName]="i" class="experience-add-card">
+							<div class="col-6 add-card-wrapp">
+								<input
+									#addInput
+									class="col-10"
+									nbInput
+									formControlName="occupation"
+									type="text"
+									placeholder="{{
+										'FORM.PLACEHOLDERS.ADD_EXPERIENCE.OCCUPATION'
+											| translate
+									}}"
+									fullWidth
+								/>
+								<!-- <input
+									#addInput
+									class="col-10"
+									nbInput
+									formControlName="organization"
+									type="text"
+									placeholder="{{
+										'FORM.PLACEHOLDERS.ADD_EXPERIENCE.ORGANIZATION'
+											| translate
+									}}"
+									fullWidth
+								/> -->
+								<input
+									#addInput
+									class="col-10"
+									nbInput
+									formControlName="duration"
+									type="text"
+									placeholder="{{
+										'FORM.PLACEHOLDERS.ADD_EXPERIENCE.DURATION'
+											| translate
+									}}"
+									fullWidth
+								/>
+							</div>
+
+							<textarea
+								class="description col-6"
+								nbInput
+								formControlName="description"
+								placeholder="{{
+									'FORM.PLACEHOLDERS.ADD_EXPERIENCE.DESCRIPTION'
+										| translate
+								}}"
+							>
+							</textarea>
+						</div>
+					</div>
+				</div>
+			</form>
+			<div class="col-2">
+				<span class="col-2 pl-2 pr-0"
+					><button
+						class="w-100 form-btn"
+						(click)="submitForm()"
+						nbButton
+						status="success"
+					>
+						{{ 'BUTTONS.SAVE' | translate }}
+					</button></span
+				>
+				<span class="col-2 pl-2 pr-0"
+					><button
+						class="w-100 form-btn"
+						(click)="cancel()"
+						nbButton
+						status="danger"
+					>
+						{{ 'BUTTONS.CANCEL' | translate }}
+					</button></span
+				>
+			</div>
+		</div>
+	</nb-card-header>
+
+	<nb-card-body *ngIf="experienceList?.length" class="mt-3">
+		<ng2-smart-table
+			*ngIf="dataLayoutStyle === 'TABLE'"
+			style="cursor: pointer"
+			[settings]="settingsSmartTable"
+			[source]="sourceSmartTable"
+			(userRowSelect)="selectExperience($event)"
+			#experienceTable
+		>
+		</ng2-smart-table>
+		<ga-card-grid
+			*ngIf="dataLayoutStyle === 'CARDS_GRID'"
+			[settings]="settingsSmartTable"
+			[source]="experienceList"
+			[buttonTemplate]="actionButtons"
+		></ga-card-grid>
+	</nb-card-body>
+	<ng-template
+		#actionButtons
+		let-buttonSize="buttonSize"
+		let-selectedItem="selectedItem"
+	>
+		<button
+			(click)="editExperience(selectedItem)"
+			nbButton
+			status="info"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="edit-outline"></nb-icon>
+			{{ 'BUTTONS.EDIT' | translate }}
+		</button>
+		<button
+			(click)="removeExperience(selectedItem)"
+			nbButton
+			status="danger"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="archive-outline"> </nb-icon>
+			{{ 'BUTTONS.DELETE' | translate }}
+		</button>
+	</ng-template>
+</nb-card>

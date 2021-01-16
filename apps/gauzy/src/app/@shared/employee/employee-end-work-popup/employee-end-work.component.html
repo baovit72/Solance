@@ -1,0 +1,52 @@
+<nb-card>
+	<nb-card-header class="d-flex">
+		<h5 *ngIf="backToWork">
+			{{
+				employeeFullName.trim()
+					? employeeFullName
+					: ('POP_UPS.EMPLOYEE' | translate)
+			}}
+			{{ 'POP_UPS.BACK_TO_WORK' | translate }}
+		</h5>
+		<h5 *ngIf="!backToWork">
+			{{ 'POP_UPS.END_WORK' | translate }}
+			{{
+				employeeFullName.trim()
+					? employeeFullName
+					: ('POP_UPS.EMPLOYEE' | translate)
+			}}
+		</h5>
+		<nb-icon
+			class="ml-auto mt-1 close"
+			icon="close-outline"
+			(click)="closeDialog()"
+		></nb-icon>
+	</nb-card-header>
+	<nb-card-body *ngIf="!backToWork">
+		<div class="row">
+			<div class="col-sm-12">
+				<input
+					[nbDatepicker]="datepicker"
+					nbInput
+					fullWidth
+					[(ngModel)]="endWorkValue"
+					placeholder="{{ 'POP_UPS.PICK_DATE' | translate }}"
+				/>
+				<nb-datepicker #datepicker></nb-datepicker>
+			</div>
+		</div>
+	</nb-card-body>
+	<nb-card-footer class="text-right">
+		<button status="success" (click)="endWork()" nbButton>
+			{{
+				(backToWork
+					? 'EMPLOYEES_PAGE.BACK_TO_WORK'
+					: 'EMPLOYEES_PAGE.END_WORK'
+				) | translate
+			}}
+		</button>
+		<button status="warning" (click)="closeDialog()" nbButton>
+			{{ 'BUTTONS.CANCEL' | translate }}
+		</button>
+	</nb-card-footer>
+</nb-card>

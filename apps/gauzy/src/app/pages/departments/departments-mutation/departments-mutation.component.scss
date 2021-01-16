@@ -1,0 +1,10 @@
+.btn-wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+:host > nb-card {
+  min-height: 47.5rem;
+}

@@ -1,0 +1,42 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"rootDir": ".",
+		"sourceMap": true,
+		"declaration": false,
+		"moduleResolution": "node",
+		"outDir": "./dist/out-tsc",
+		"resolveJsonModule": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"target": "es2015",
+		"module": "commonjs",
+		"typeRoots": ["node_modules/@types"],
+		"lib": ["dom", "es2018", "esnext.array"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"baseUrl": ".",
+		"paths": {
+			"@gauzy/utils": ["libs/utils/src/index.ts"],
+			"@gauzy/models": ["libs/models/src/index.ts"],
+			"@gauzy/integration-ai": ["libs/integration-ai/src/index.ts"],
+			"@gauzy/integration-hubstaff": [
+				"libs/integration-hubstaff/src/index.ts"
+			],
+			"@gauzy/integration-upwork": [
+				"libs/integration-upwork/src/index.ts"
+			],
+			"@env-api/environment": [
+				"src/environments/environment.ts"
+			],
+			"ng2-completer": ["node_modules/@akveo/ng2-completer"]
+		},
+		"preserveConstEnums": true,
+		"allowSyntheticDefaultImports": true,
+		"noUnusedLocals": false,
+		"noImplicitAny": false,
+		"esModuleInterop": false
+	},
+	"exclude": ["coverage/**/*", "dist/**/*", "node_modules", "tmp"]
+}

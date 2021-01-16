@@ -1,0 +1,154 @@
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" nbSpinnerSize="large">
+	<nb-card-header class="header-selector-wrapper">
+		<div>
+			<h4>{{ 'PROPOSALS_PAGE.HEADER' | translate }}</h4>
+		</div>
+		<div>
+			<ga-layout-selector
+				componentName="{{ viewComponentName }}"
+			></ga-layout-selector>
+		</div>
+	</nb-card-header>
+	<nb-card-body>
+		<nb-card class="p-3">
+			<h6>{{ 'PROPOSALS_PAGE.STATISTICS' | translate }}</h6>
+			<div>
+				<span
+					>{{
+						'PROPOSALS_PAGE.ACCEPTED_PROPOSALS' | translate
+					}}: </span
+				><span>{{ countAccepted }}</span>
+			</div>
+			<div>
+				<span
+					>{{ 'PROPOSALS_PAGE.TOTAL_PROPOSALS' | translate }}:
+				</span>
+				<span>{{ totalProposals }}</span>
+			</div>
+			<div>
+				<span>{{ 'PROPOSALS_PAGE.SUCCESS_RATE' | translate }}: </span>
+				<span
+					><b>{{ successRate }}</b>
+				</span>
+			</div>
+		</nb-card>
+
+		<ng-template ngxPermissionsOnly="ORG_PROPOSALS_EDIT">
+			<div class="mb-3">
+				<button nbButton status="success" (click)="add()" class="mr-2">
+					<nb-icon class="mr-1" icon="plus-outline"></nb-icon>
+					{{ 'BUTTONS.REGISTER' | translate }}
+				</button>
+				<ng-container *ngIf="dataLayoutStyle === 'TABLE'">
+					<ng-container
+						*ngTemplateOutlet="actionButtons"
+					></ng-container>
+				</ng-container>
+				<ng-template ngxPermissionsOnly="ORG_PROPOSAL_TEMPLATES_VIEW">
+					<button
+						nbButton
+						status="info"
+						routerLink="/pages/jobs/proposal-template"
+						class="mr-2"
+					>
+						<nb-icon
+							class="mr-1"
+							icon="file-text-outline"
+						></nb-icon>
+						{{ 'BUTTONS.MANAGE_TEMPLATES' | translate }}
+					</button>
+				</ng-template>
+			</div>
+		</ng-template>
+
+		<ng2-smart-table
+			*ngIf="dataLayoutStyle === 'TABLE'"
+			class="income-table"
+			[settings]="smartTableSettings"
+			[source]="smartTableSource"
+			(userRowSelect)="selectProposal($event)"
+			style="cursor: pointer"
+			#proposalsTable
+		>
+		</ng2-smart-table>
+
+		<ga-card-grid
+			*ngIf="dataLayoutStyle === 'CARDS_GRID'"
+			[settings]="smartTableSettings"
+			[source]="proposals"
+			[buttonTemplate]="actionButtons"
+		></ga-card-grid>
+	</nb-card-body>
+</nb-card>
+<ng-template
+	#actionButtons
+	let-buttonSize="buttonSize"
+	let-selectedItem="selectedItem"
+>
+	<ng-template ngxPermissionsOnly="ORG_PROPOSALS_EDIT">
+		<button
+			nbButton
+			(click)="details(selectedItem)"
+			status="info"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="edit-outline"></nb-icon
+			>{{ 'BUTTONS.DETAILS' | translate }}
+		</button>
+		<button
+			nbButton
+			(click)="delete(selectedItem)"
+			status="danger"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="trash-2-outline"></nb-icon
+			>{{ 'BUTTONS.DELETE' | translate }}
+		</button>
+		<button
+			*ngIf="proposalStatus && dataLayoutStyle === 'TABLE'"
+			nbButton
+			(click)="
+				proposalStatus == 'SENT'
+					? switchToAccepted(selectedItem)
+					: switchToSent(selectedItem)
+			"
+			[size]="buttonSize || 'medium'"
+			status="warning"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+		>
+			<nb-icon class="mr-1" icon="person-delete-outline"> </nb-icon>
+			<span *ngIf="proposalStatus == 'ACCEPTED'">{{
+				'BUTTONS.MARK_AS_SENT' | translate
+			}}</span>
+			<span *ngIf="proposalStatus == 'SENT'">{{
+				'BUTTONS.MARK_AS_ACCEPTED' | translate
+			}}</span>
+		</button>
+		<button
+			*ngIf="dataLayoutStyle === 'CARDS_GRID'"
+			nbButton
+			(click)="
+				selectedItem.status == 'SENT'
+					? switchToAccepted(selectedItem)
+					: switchToSent(selectedItem)
+			"
+			[size]="buttonSize || 'medium'"
+			status="warning"
+			class="mr-2"
+			[disabled]="!selectedItem && disableButton"
+		>
+			<nb-icon class="mr-1" icon="person-delete-outline"> </nb-icon>
+			<span *ngIf="selectedItem.status == 'ACCEPTED'">{{
+				'BUTTONS.MARK_AS_SENT' | translate
+			}}</span>
+			<span *ngIf="selectedItem.status == 'SENT'">{{
+				'BUTTONS.MARK_AS_ACCEPTED' | translate
+			}}</span>
+		</button>
+	</ng-template>
+</ng-template>

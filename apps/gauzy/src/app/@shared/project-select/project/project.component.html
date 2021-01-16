@@ -1,0 +1,29 @@
+<ng-template [ngIf]="!multiple" [ngIfElse]="multipleSelect">
+	<div (click)="$event.stopPropagation()">
+		<ng-select
+			[addTag]="hasPermissionProjEdit ? createNew : null"
+			[multiple]="multiple"
+			[clearable]="true"
+			[disabled]="disabled"
+			[items]="projects"
+			[(ngModel)]="projectId"
+			[placeholder]="'TIMER_TRACKER.SELECT_PROJECT' | translate"
+			bindValue="id"
+			bindLabel="name"
+		>
+		</ng-select>
+	</div>
+</ng-template>
+<ng-template #multipleSelect>
+	<nb-select
+		class="multiple-select"
+		[disabled]="disabled"
+		[multiple]="multiple"
+		[placeholder]="'TIMER_TRACKER.SELECT_PROJECT' | translate"
+		[(selected)]="projectId"
+	>
+		<nb-option *ngFor="let project of projects" [value]="project.id">
+			{{ project.name }}
+		</nb-option>
+	</nb-select>
+</ng-template>

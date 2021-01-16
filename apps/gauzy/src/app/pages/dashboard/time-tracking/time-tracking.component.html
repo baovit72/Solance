@@ -1,0 +1,532 @@
+<nb-card>
+	<nb-card-header>
+		<h4>{{ 'TIMESHEET.TIME_TRACKING' | translate }}</h4>
+		<div>{{ startDate | date }} - {{ endDate | date }}</div>
+	</nb-card-header>
+	<nb-card-body>
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="row">
+					<div
+						class="col-sm-4 col-md-3 col-lg"
+						*ngxPermissionsOnly="
+							PermissionsEnum.CHANGE_SELECTED_EMPLOYEE
+						"
+					>
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{ 'TIMESHEET.MEMBERS_WORKED' | translate }}
+								</p>
+								<div class="h1">
+									{{ counts?.employeesCount || 0 }}
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+					<div class="col-sm-4 col-md-3 col-lg">
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{
+										'TIMESHEET.PROJECTS_WORKED' | translate
+									}}
+								</p>
+								<div class="h1">
+									{{ counts?.projectsCount || 0 }}
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+					<div class="col-sm-4 col-md-3 col-lg">
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{
+										'TIMESHEET.WEEKLY_ACTIVITY' | translate
+									}}
+								</p>
+								<div class="h1">
+									{{ counts?.weekActivities || 0 }}%
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+					<div class="col-sm-4 col-md-3 col-lg">
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{
+										'TIMESHEET.WORKED_THIS_WEEK' | translate
+									}}
+								</p>
+								<div class="h1">
+									{{
+										counts?.weekDuration || 0
+											| durationFormat
+									}}
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+					<div class="col-sm-4 col-md-3 col-lg">
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{ 'TIMESHEET.TODAY_ACTIVITY' | translate }}
+								</p>
+								<div class="h1">
+									{{ counts?.todayActivities || 0 }}%
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+					<div class="col-sm-4 col-md-3 col-lg">
+						<nb-card
+							[nbSpinner]="countsLoading"
+							nbSpinnerSize="giant"
+							nbSpinnerStatus="primary"
+						>
+							<nb-card-body>
+								<p>
+									{{ 'TIMESHEET.WORKED_TODAY' | translate }}
+								</p>
+								<div class="h1">
+									{{
+										counts?.todayDuration || 0
+											| durationFormat
+									}}
+								</div>
+							</nb-card-body>
+						</nb-card>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<nb-card
+					[nbSpinner]="timeSlotLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+				>
+					<nb-card-header>{{
+						'TIMESHEET.RECENT_ACTIVITIES' | translate
+					}}</nb-card-header>
+					<nb-card-body>
+						<ng-template
+							[ngIf]="timeSlotEmployees?.length > 0"
+							[ngIfElse]="noScreenshot"
+						>
+							<div
+								class="row"
+								*ngFor="let employee of timeSlotEmployees"
+							>
+								<div class="col">
+									<div
+										class="hour-lable mt-3"
+										*ngxPermissionsOnly="
+											PermissionsEnum.CHANGE_SELECTED_EMPLOYEE
+										"
+									>
+										<ngx-avatar
+											size="sm"
+											[name]="employee?.user?.name"
+											[src]="employee?.user?.imageUrl"
+											[caption]="
+												(employee?.timeSlots)[0]
+													?.startedAt | date
+											"
+										></ngx-avatar>
+									</div>
+									<div
+										class="row my-3 align-items-center justify-content-center"
+									>
+										<div
+											class="col"
+											*ngFor="
+												let timeSlot of employee.timeSlots
+											"
+										>
+											<ngx-screenshots-item
+												[timeSlot]="timeSlot"
+												(delete)="onDelete()"
+											>
+											</ngx-screenshots-item>
+										</div>
+									</div>
+								</div>
+							</div>
+						</ng-template>
+						<ng-template #noScreenshot>
+							<div class="text-center" *ngIf="!timeSlotLoading">
+								{{ 'TIMESHEET.NO_SCREENSHOT' | translate }}
+							</div>
+						</ng-template>
+					</nb-card-body>
+				</nb-card>
+
+				<nb-card
+					class="mt-4"
+					[nbSpinner]="tasksLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+				>
+					<nb-card-header>{{
+						'TIMESHEET.TASKS' | translate
+					}}</nb-card-header>
+					<ng-template
+						[ngIf]="tasks?.length > 0"
+						[ngIfElse]="noTasks"
+					>
+						<nb-list>
+							<nb-list-item *ngFor="let task of tasks">
+								<div class="w-100">
+									<div class="row align-items-center">
+										<div class="col">
+											{{ task.title }}
+										</div>
+										<div class="col-sm-3">
+											<nb-progress-bar
+												class="mb-1"
+												[value]="
+													task.durationPercentage
+												"
+												[status]="
+													progressStatus(
+														task.durationPercentage
+													)
+												"
+												[displayValue]="true"
+												size="tiny"
+											>
+											</nb-progress-bar>
+										</div>
+										<div class="col-auto">
+											{{ task.duration | durationFormat }}
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+						</nb-list>
+					</ng-template>
+					<ng-template #noTasks>
+						<div class="text-center p-3" *ngIf="!tasksLoading">
+							{{ 'TIMESHEET.NO_TASK_ACTIVITY' | translate }}
+						</div>
+					</ng-template>
+				</nb-card>
+
+				<nb-card
+					class="mt-4"
+					[nbSpinner]="manualTimeLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+				>
+					<nb-card-header>{{
+						'TIMESHEET.MANUAL_TIME' | translate
+					}}</nb-card-header>
+					<ng-template
+						[ngIf]="manualTimes?.length > 0"
+						[ngIfElse]="noManualTimes"
+					>
+						<nb-list>
+							<nb-list-item>
+								<div class="w-100">
+									<div class="row py-2 font-weight-bold">
+										<div class="col-sm-4">
+											{{ 'TIMESHEET.MEMBER' | translate }}
+										</div>
+										<div class="col-sm-4">
+											{{
+												'TIMESHEET.PROJECT' | translate
+											}}
+										</div>
+										<div class="col-sm-2">
+											{{
+												'TIMESHEET.DURATION' | translate
+											}}
+										</div>
+										<div class="col-sm-2">
+											{{ 'TIMESHEET.DATE' | translate }}
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+							<nb-list-item
+								*ngFor="let manualTime of manualTimes"
+							>
+								<div class="w-100">
+									<div class="row">
+										<div class="col-sm-4">
+											<ngx-avatar
+												[name]="manualTime?.user?.name"
+												[src]="
+													manualTime?.user?.imageUrl
+												"
+											></ngx-avatar>
+										</div>
+										<div class="col-sm-4">
+											{{ manualTime.project.name }}
+										</div>
+										<div class="col-sm-2">
+											{{
+												manualTime.duration
+													| durationFormat
+											}}
+										</div>
+										<div class="col-sm-2">
+											{{ manualTime.startedAt | date }}
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+						</nb-list>
+					</ng-template>
+					<ng-template #noManualTimes>
+						<div class="text-center p-3" *ngIf="!manualTimeLoading">
+							{{ 'TIMESHEET.NO_MANUAL_TIME' | translate }}
+						</div>
+					</ng-template>
+				</nb-card>
+			</div>
+
+			<div class="col-sm-6">
+				<nb-card
+					[nbSpinner]="projectsLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+				>
+					<nb-card-header>Projects</nb-card-header>
+					<ng-template
+						[ngIf]="projects?.length > 0"
+						[ngIfElse]="noProjects"
+					>
+						<nb-list>
+							<nb-list-item *ngFor="let project of projects">
+								<div class="w-100">
+									<div class="row align-items-center">
+										<div class="col">
+											{{ project.name }}
+										</div>
+										<div class="col-sm-3">
+											<nb-progress-bar
+												class="mb-1"
+												[value]="
+													project.durationPercentage
+												"
+												[status]="
+													progressStatus(
+														project.durationPercentage
+													)
+												"
+												[displayValue]="true"
+												size="tiny"
+											>
+											</nb-progress-bar>
+										</div>
+										<div class="col-auto">
+											{{
+												project.duration
+													| durationFormat
+											}}
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+						</nb-list>
+					</ng-template>
+					<ng-template #noProjects>
+						<div class="text-center p-3" *ngIf="!projectsLoading">
+							{{ 'TIMESHEET.NO_PROJECT_ACTIVITY' | translate }}
+						</div>
+					</ng-template>
+				</nb-card>
+
+				<nb-card
+					class="mt-4"
+					[nbSpinner]="activitiesLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+				>
+					<nb-card-header>{{
+						'TIMESHEET.APPS_URLS' | translate
+					}}</nb-card-header>
+					<ng-template
+						[ngIf]="activities?.length > 0"
+						[ngIfElse]="noActivities"
+					>
+						<nb-list>
+							<nb-list-item *ngFor="let activity of activities">
+								<div class="w-100">
+									<ngx-activity-item
+										[item]="activity"
+									></ngx-activity-item>
+								</div>
+							</nb-list-item>
+						</nb-list>
+					</ng-template>
+					<ng-template #noActivities>
+						<div class="text-center p-3" *ngIf="!activitiesLoading">
+							{{ 'TIMESHEET.NO_APP_URL_ACTIVITY' | translate }}
+						</div>
+					</ng-template>
+				</nb-card>
+
+				<nb-card
+					class="mt-4"
+					[nbSpinner]="memberLoading"
+					nbSpinnerSize="giant"
+					nbSpinnerStatus="primary"
+					*ngxPermissionsOnly="
+						PermissionsEnum.CHANGE_SELECTED_EMPLOYEE
+					"
+				>
+					<nb-card-header>{{
+						'TIMESHEET.MEMBERS' | translate
+					}}</nb-card-header>
+					<ng-template
+						[ngIf]="members?.length > 0"
+						[ngIfElse]="noMember"
+					>
+						<nb-list>
+							<nb-list-item>
+								<div class="w-100">
+									<div class="row font-weight-bold">
+										<div class="col">
+											{{
+												'TIMESHEET.MEMBER_INFO'
+													| translate
+											}}
+										</div>
+										<div class="col-sm-2 text-center">
+											{{ 'TIMESHEET.TODAY' | translate }}
+										</div>
+										<div class="col-sm-3 text-center">
+											{{
+												'TIMESHEET.THIS_WEEK'
+													| translate
+											}}
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+							<nb-list-item *ngFor="let member of members">
+								<div class="w-100">
+									<div class="row">
+										<div class="col">
+											<ngx-avatar
+												[name]="member?.user?.name"
+												[src]="member?.user?.imageUrl"
+											></ngx-avatar>
+										</div>
+										<div class="col-sm-2 text-center">
+											<div class="activity">
+												<div class="duration">
+													{{
+														member?.todayTime
+															?.duration || 0
+															| durationFormat
+													}}
+												</div>
+												<div
+													class="activity-percentage"
+												>
+													<nb-badge
+														[status]="
+															progressStatus(
+																member
+																	?.todayTime
+																	?.overall
+															)
+														"
+														[text]="
+															(member?.todayTime
+																?.overall ||
+																0) + '%'
+														"
+													></nb-badge>
+												</div>
+											</div>
+										</div>
+										<div class="col-sm-3 text-center">
+											<div class="d-flex">
+												<div
+													class="activity text-center"
+												>
+													<div class="duration">
+														{{
+															member?.weekTime
+																?.duration || 0
+																| durationFormat
+														}}
+													</div>
+													<div
+														class="activity-percentage"
+													>
+														<nb-badge
+															[status]="
+																progressStatus(
+																	member
+																		?.weekTime
+																		?.overall
+																)
+															"
+															[text]="
+																(member
+																	?.weekTime
+																	?.overall ||
+																	0) + '%'
+															"
+														></nb-badge>
+													</div>
+												</div>
+												<div
+													class="member-weekly-activity-graph"
+												>
+													<div
+														class="bar-graph-entry"
+														*ngFor="
+															let weekHour of member.weekHours
+														"
+														[style.height]="
+															weekHour.duration +
+															'%'
+														"
+													></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</nb-list-item>
+						</nb-list>
+					</ng-template>
+					<ng-template #noMember>
+						<div class="text-center p-3" *ngIf="!memberLoading">
+							{{ 'TIMESHEET.NO_MEMBER_ACTIVITY' | translate }}
+						</div>
+					</ng-template>
+				</nb-card>
+			</div>
+		</div>
+	</nb-card-body>
+</nb-card>

@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig_base.json",
+	"compilerOptions": {
+		"types": ["node", "jest"],
+		"incremental": true,
+		"tsBuildInfoFile": "./tsconfig.tsbuildinfo"
+	},
+	"include": [
+		"**/*.ts"
+	]
+}

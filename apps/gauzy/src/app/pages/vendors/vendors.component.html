@@ -1,0 +1,250 @@
+<nb-card>
+	<nb-card-header>
+		<div class="header">
+			<h4>{{ 'ORGANIZATIONS_PAGE.VENDORS' | translate }}</h4>
+			<div class="header">
+				<ga-layout-selector
+					componentName="{{ viewComponentName }}"
+				></ga-layout-selector>
+			</div>
+		</div>
+	</nb-card-header>
+	<nb-card-body>
+		<div class="mb-3">
+			<ng-container
+				*ngIf="showAddCard; then editableTemplate; else buttonTemplate"
+			>
+			</ng-container>
+			<ng-template #editableTemplate>
+				<div>
+					<form [formGroup]="form" *ngIf="form" class="form">
+						<div class="row">
+							<div class="col-sm-12 col-md-4">
+								<label class="label" for="name">{{
+									'ORGANIZATIONS_PAGE.NAME' | translate
+								}}</label>
+								<input
+									nbInput
+									type="text"
+									fullWidth
+									placeholder="{{
+										'ORGANIZATIONS_PAGE.NAME' | translate
+									}}"
+									id="name"
+									formControlName="name"
+									[status]="
+										isInvalidControl('name')
+											? 'danger'
+											: 'basic'
+									"
+								/>
+							</div>
+							<div class="col-sm-12 col-md-4">
+								<label class="label" for="phone">{{
+									'ORGANIZATIONS_PAGE.PHONE' | translate
+								}}</label>
+								<input
+									nbInput
+									type="text"
+									fullWidth
+									placeholder="{{
+										'ORGANIZATIONS_PAGE.PHONE' | translate
+									}}"
+									id="phone"
+									formControlName="phone"
+								/>
+							</div>
+							<div class="col-sm-12 col-md-4">
+								<label class="label" for="email">{{
+									'ORGANIZATIONS_PAGE.EMAIL' | translate
+								}}</label>
+								<input
+									nbInput
+									type="text"
+									fullWidth
+									placeholder="{{
+										'ORGANIZATIONS_PAGE.EMAIL' | translate
+									}}"
+									id="email"
+									formControlName="email"
+									[status]="
+										isInvalidControl('email')
+											? 'danger'
+											: 'basic'
+									"
+								/>
+							</div>
+							<div class="col-sm-12 col-md-6">
+								<label class="label" for="website">{{
+									'ORGANIZATIONS_PAGE.WEBSITE' | translate
+								}}</label>
+								<input
+									nbInput
+									type="text"
+									fullWidth
+									placeholder="{{
+										'ORGANIZATIONS_PAGE.WEBSITE' | translate
+									}}"
+									id="website"
+									formControlName="website"
+								/>
+							</div>
+							<div class="col-sm-12 col-md-6">
+								<ga-tags-color-input
+									[selectedTags]="tags"
+									(selectedTagsEvent)="
+										selectedTagsEvent($event)
+									"
+									class="add-tags"
+									[isOrgLevel]="true"
+								>
+								</ga-tags-color-input>
+							</div>
+						</div>
+					</form>
+				</div>
+			</ng-template>
+			<ng-template #buttonTemplate>
+				<button (click)="add()" nbButton status="success">
+					<nb-icon class="mr-1" icon="plus-outline"></nb-icon
+					>{{ 'BUTTONS.ADD' | translate }}
+				</button>
+			</ng-template>
+		</div>
+
+		<div *ngIf="dataLayoutStyle === 'TABLE' && !showAddCard">
+			<nb-card *ngFor="let v of vendors">
+				<nb-card-body class="table">
+					<div class="row">
+						<div class="col-sm-12 col-md-3 float-left p-0">
+							<div class="col-12" *ngIf="v.name">
+								<span class="mb-1">
+									<span class="label">
+										{{
+											'ORGANIZATIONS_PAGE.NAME'
+												| translate
+										}}: </span
+									>{{ v.name }}</span
+								>
+							</div>
+							<div class="col-12" *ngIf="v.phone">
+								<span>
+									<span class="label">
+										{{
+											'ORGANIZATIONS_PAGE.PHONE'
+												| translate
+										}}: </span
+									>{{ v.phone }}</span
+								>
+							</div>
+						</div>
+						<div class="col-sm-12 col-md-3 float-left p-0">
+							<div class="col-12" *ngIf="v.email">
+								<span class="mb-1">
+									<span class="label">
+										{{
+											'ORGANIZATIONS_PAGE.EMAIL'
+												| translate
+										}}: </span
+									>{{ v.email }}</span
+								>
+							</div>
+							<div class="col-12" *ngIf="v.website">
+								<span>
+									<span class="label">
+										{{
+											'ORGANIZATIONS_PAGE.WEBSITE'
+												| translate
+										}}: </span
+									>{{ v.website }}</span
+								>
+							</div>
+						</div>
+						<div class="col-sm-12 col-md-5 p-2">
+							<div class="tags float-right">
+								<nb-badge
+									*ngFor="let tag of v?.tags"
+									class="color"
+									position="centered"
+									[style.background]="tag.color"
+									text="{{ tag.name }}"
+								>
+								</nb-badge>
+							</div>
+						</div>
+						<div class="col-sm-12 col-md-1 p-2">
+							<nb-actions
+								*ngIf="v !== selectedVendor"
+								class="float-right"
+								e="medium"
+							>
+								<nb-action
+									(click)="edit(v)"
+									class="d-inline pr-2"
+									icon="edit"
+								></nb-action>
+								<nb-action
+									(click)="removeVendor(v.id, v.name)"
+									class="d-inline pr-0 pl-2"
+									icon="close"
+								></nb-action>
+							</nb-actions>
+						</div>
+					</div>
+				</nb-card-body>
+			</nb-card>
+		</div>
+
+		<ga-card-grid
+			*ngIf="dataLayoutStyle === 'CARDS_GRID' && !showAddCard"
+			[settings]="settingsSmartTable"
+			[source]="vendors"
+			[buttonTemplate]="actionButtons"
+		></ga-card-grid>
+
+		<ng-template
+			#actionButtons
+			let-buttonSize="buttonSize"
+			let-selectedItem="selectedItem"
+		>
+			<button
+				(click)="edit(selectedItem)"
+				nbButton
+				status="info"
+				class="mr-2"
+				[disabled]="!selectedItem"
+				[size]="buttonSize || 'medium'"
+			>
+				<nb-icon class="mr-1" icon="edit-outline"></nb-icon>
+				{{ 'BUTTONS.EDIT' | translate }}
+			</button>
+			<button
+				(click)="removeVendor(selectedItem.id, selectedItem.name)"
+				nbButton
+				status="danger"
+				class="mr-2"
+				[disabled]="!selectedItem"
+				[size]="buttonSize || 'medium'"
+			>
+				<nb-icon class="mr-1" icon="archive-outline"> </nb-icon>
+				{{ 'BUTTONS.DELETE' | translate }}
+			</button>
+		</ng-template>
+	</nb-card-body>
+
+	<ng-container *ngIf="showAddCard" ;>
+		<nb-card-footer class="text-right">
+			<button (click)="cancel()" nbButton status="danger" class="mr-2">
+				{{ 'BUTTONS.CANCEL' | translate }}
+			</button>
+			<button
+				(click)="save()"
+				nbButton
+				status="success"
+				[disabled]="form.invalid"
+			>
+				{{ 'BUTTONS.SAVE' | translate }}
+			</button>
+		</nb-card-footer>
+	</ng-container>
+</nb-card>

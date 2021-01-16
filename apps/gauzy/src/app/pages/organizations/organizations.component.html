@@ -1,0 +1,87 @@
+<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" nbSpinnerSize="large">
+	<nb-card-header class="header-selector-wrapper">
+		<h4>{{ 'ORGANIZATIONS_PAGE.ORGANIZATIONS' | translate }}</h4>
+		<ga-layout-selector
+			componentName="{{ viewComponentName }}"
+		></ga-layout-selector>
+	</nb-card-header>
+	<nb-card-body>
+		<div class="mb-3">
+			<ng-container *ngIf="dataLayoutStyle === 'TABLE'">
+				<ng-container *ngTemplateOutlet="actionButtons"></ng-container>
+			</ng-container>
+		</div>
+		<ng2-smart-table
+			[settings]="settingsSmartTable"
+			[source]="smartTableSource"
+			(userRowSelect)="selectOrganization($event)"
+			style="cursor: pointer"
+			*ngIf="dataLayoutStyle === 'TABLE'"
+			#organizationsTable
+		>
+		</ng2-smart-table>
+		<ul class="flex-container" *ngIf="dataLayoutStyle === 'CARDS_GRID'">
+			<li class="flex-item" *ngFor="let x of organizations">
+				<div class="fullName">
+					<img [src]="x.imageUrl" alt="Avatar" class="avatar" />
+					<span>{{ x.name }}</span>
+				</div>
+				<div class="info-line">
+					<span class="info-meta">{{
+						'SM_TABLE.EMPLOYEES' | translate
+					}}</span>
+					<span class="info-value">{{ x.totalEmployees }}</span>
+				</div>
+				<div class="info-line">
+					<span class="info-meta">{{
+						'SM_TABLE.STATUS' | translate
+					}}</span>
+					<div class="text-center" *ngIf="x.isActive; else archived">
+						<div class="text-center badge-success">
+							{{ 'ORGANIZATIONS_PAGE.ACTIVE' | translate }}
+						</div>
+					</div>
+					<ng-template #archived>
+						<div class="text-center">
+							<div class="badge-danger d-block">
+								{{ 'ORGANIZATIONS_PAGE.ARCHIVED' | translate }}
+							</div>
+						</div>
+					</ng-template>
+				</div>
+
+				<nb-card-footer class="card-footer">
+					<ng-container
+						*ngTemplateOutlet="
+							actionButtons;
+							context: {
+								buttonSize: 'tiny',
+								selectedItem: x
+							}
+						"
+					>
+					</ng-container>
+				</nb-card-footer>
+			</li>
+		</ul>
+	</nb-card-body>
+</nb-card>
+<ng-template
+	#actionButtons
+	let-buttonSize="buttonSize"
+	let-selectedItem="selectedItem"
+>
+	<ng-template [ngxPermissionsOnly]="['ALL_ORG_EDIT', 'ORG_EXPENSES_EDIT']">
+		<button
+			nbButton
+			[disabled]="!selectedItem && disableButton"
+			(click)="editOrganization(selectedItem)"
+			status="info"
+			class="mr-2"
+			[size]="buttonSize || 'medium'"
+		>
+			<nb-icon class="mr-1" icon="edit-outline"></nb-icon
+			>{{ 'BUTTONS.MANAGE' | translate }}
+		</button>
+	</ng-template>
+</ng-template>

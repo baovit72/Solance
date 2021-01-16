@@ -1,0 +1,7 @@
+{
+  "extends": "./tslint_base.json",
+  "linterOptions": {
+    
+  },
+  "rules": {}
+}

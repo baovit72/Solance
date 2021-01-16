@@ -1,0 +1,199 @@
+<nb-card class="jobs-page">
+	<nb-card-header class="header">
+		<h4>{{ 'JOBS.JOB_SEARCH' | translate }}</h4>
+	</nb-card-header>
+	<nb-card-body>
+		<div class="job-filters py-3">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="row">
+						<div class="col-sm-3 form-group m-0">
+							<input
+								type="text"
+								class="w-100"
+								[placeholder]="'JOBS.JOB_SEARCH' | translate"
+								nbInput
+								[(ngModel)]="jobRequest.search"
+								(input)="applyFilter()"
+							/>
+						</div>
+						<div class="col-auto">
+							<button
+								type="button"
+								(click)="
+									isOpenAdvancedFilter = !isOpenAdvancedFilter
+								"
+								nbButton
+								status="info"
+							>
+								<nb-icon icon="funnel-outline"></nb-icon>
+								{{ 'BUTTONS.FILTER' | translate }}
+							</button>
+						</div>
+						<div class="col-auto ml-auto d-flex align-items-center">
+							<button
+								class="mr-5"
+								type="button"
+								(confirm)="hideAll()"
+								ngxConfirmDialog
+								[message]="'JOBS.HIDE_ALL_CONFIRM' | translate"
+								[yesText]="
+									'BUTTONS.YES_HIDE_ALL_JOBS' | translate
+								"
+								[noText]="'BUTTONS.CANCEL' | translate"
+								nbButton
+								status="danger"
+							>
+								<nb-icon icon="eye-off-outline"></nb-icon>
+								{{ 'BUTTONS.HIDE_ALL' | translate }}
+							</button>
+
+							<nb-toggle
+								class="mr-3"
+								(checkedChange)="setAutoRefresh($event)"
+								[(ngModel)]="autoRefresh"
+								>{{
+									'BUTTONS.AUTO_REFRESH' | translate
+								}}</nb-toggle
+							>
+							<button
+								*ngIf="!autoRefresh"
+								type="button"
+								(click)="smartTableSource.refresh()"
+								nbButton
+								status="success"
+							>
+								<nb-icon icon="refresh-outline"></nb-icon>
+								{{ 'BUTTONS.REFRESH' | translate }}
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="advanced-filter my-4" *ngIf="isOpenAdvancedFilter">
+				<nb-card>
+					<nb-card-header>
+						<h6>{{ 'JOBS.FILTER.TITLE' | translate }}</h6>
+					</nb-card-header>
+					<nb-card-body>
+						<div class="row">
+							<div class="col-sm-6 form-group">
+								<label class="d-block">{{
+									'JOBS.FILTER.SOURCE' | translate
+								}}</label>
+								<nb-select
+									(selectedChange)="applyFilter()"
+									[placeholder]="
+										'JOBS.FILTER.SOURCE' | translate
+									"
+									class="w-100"
+									multiple
+									[(ngModel)]="jobRequest.jobSource"
+								>
+									<nb-option
+										*ngFor="
+											let source of JobPostSourceEnum
+												| keyvalue
+										"
+										[value]="source?.value"
+										>{{
+											'JOBS.' + source.value | translate
+										}}</nb-option
+									>
+								</nb-select>
+							</div>
+							<div class="col-sm-6 form-group">
+								<label class="d-block">{{
+									'JOBS.FILTER.JOB_TYPE' | translate
+								}}</label>
+								<nb-select
+									(selectedChange)="applyFilter()"
+									[placeholder]="
+										'JOBS.FILTER.JOB_TYPE' | translate
+									"
+									class="w-100"
+									multiple
+									[(ngModel)]="jobRequest.jobType"
+								>
+									<nb-option
+										*ngFor="
+											let type of JobPostTypeEnum
+												| keyvalue
+										"
+										[value]="type.value"
+										>{{ 'JOBS.' + type.key | translate }}
+									</nb-option>
+								</nb-select>
+							</div>
+							<div class="col-sm-6 form-group">
+								<label class="d-block">{{
+									'JOBS.FILTER.JOB_STATUS' | translate
+								}}</label>
+								<nb-select
+									(selectedChange)="applyFilter()"
+									[placeholder]="
+										'JOBS.FILTER.JOB_STATUS' | translate
+									"
+									class="w-100"
+									[(ngModel)]="jobRequest.jobStatus"
+								>
+									<nb-option
+										*ngFor="
+											let type of JobPostStatusEnum
+												| keyvalue
+										"
+										[value]="type.value"
+										>{{
+											'JOBS.STATUS_' + type.value
+												| translate
+										}}
+									</nb-option>
+								</nb-select>
+							</div>
+							<div class="col-sm-6 form-group">
+								<label class="d-block">{{
+									'JOBS.FILTER.BUDGET' | translate
+								}}</label>
+								<nb-select
+									(selectedChange)="applyFilter()"
+									[placeholder]="
+										'JOBS.FILTER.BUDGET' | translate
+									"
+									class="w-100"
+									multiple
+									[(ngModel)]="jobRequest.budget"
+								>
+									<nb-option [value]="[null, 100]"
+										>{{
+											'JOBS.FILTER.LESS_THAN' | translate
+										}}
+										$100</nb-option
+									>
+									<nb-option [value]="[100, 500]"
+										>$100 - $500</nb-option
+									>
+									<nb-option [value]="[500, 1000]"
+										>$500 - $1K</nb-option
+									>
+									<nb-option [value]="[1000, 5000]"
+										>$1K - $5K</nb-option
+									>
+									<nb-option [value]="[5000, null]"
+										>$5K+</nb-option
+									>
+								</nb-select>
+							</div>
+						</div>
+					</nb-card-body>
+				</nb-card>
+			</div>
+		</div>
+
+		<ng2-smart-table
+			[settings]="settingsSmartTable"
+			(custom)="onCustom($event)"
+			[source]="smartTableSource"
+			#jobSearchTable
+		></ng2-smart-table>
+	</nb-card-body>
+</nb-card>

@@ -1,0 +1,9 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"types": ["node", "jest", "googlemaps"],
+		"target": "es5",
+		"downlevelIteration": true
+	},
+	"include": ["**/*.ts"]
+}

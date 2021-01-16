@@ -1,0 +1,181 @@
+<nb-card class="main">
+	<nb-card-header class="d-flex">
+		<ngx-back-navigation></ngx-back-navigation>
+		<h3>
+			{{ 'PROPOSALS_PAGE.REGISTER.REGISTER_PROPOSALS' | translate }}
+		</h3>
+	</nb-card-header>
+
+	<nb-card-body>
+		<form [formGroup]="form" *ngIf="form">
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label class="label">
+							{{
+								'PROPOSALS_PAGE.REGISTER.AUTHOR' | translate
+							}}</label
+						>
+						<ga-employee-selector
+							#employeeSelector
+							[skipGlobalChange]="true"
+							id="authorInput"
+							class="employees"
+							(selectionChanged)="onEmployeeChange($event)"
+						>
+						</ga-employee-selector>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label class="label">
+							{{
+								'PROPOSALS_PAGE.REGISTER.TEMPLATE' | translate
+							}}</label
+						>
+
+						<ngx-proposal-template-select
+							(selectedChange)="onProposalTemplateChange($event)"
+							[ngModelOptions]="{ standalone: true }"
+							[(ngModel)]="proposalTemplateId"
+							[employeeId]="selectedEmployee?.id"
+						>
+						</ngx-proposal-template-select>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label class="label">{{
+							'POP_UPS.CONTACT' | translate
+						}}</label>
+						<ng-select
+							[addTag]="addNewOrganizationContact"
+							[items]="organizationContacts"
+							bindLabel="name"
+							[searchable]="true"
+							formControlName="organizationContact"
+							(change)="selectOrganizationContact($event)"
+							placeholder="{{ 'POP_UPS.CONTACT' | translate }}"
+						>
+							<ng-template
+								ng-option-tmp
+								let-item="item"
+								let-index="index"
+							>
+								{{ item.name }}
+							</ng-template>
+							<ng-template ng-label-tmp let-item="item">
+								<div class="selector-template">
+									<span>{{ item.name }}</span>
+								</div>
+							</ng-template>
+						</ng-select>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xl-6">
+					<div class="form-group">
+						<label class="label"
+							>{{
+								'PROPOSALS_PAGE.REGISTER.JOB_POST_URL'
+									| translate
+							}}
+						</label>
+						<input
+							nbInput
+							fullWidth
+							type="text"
+							placeholder="{{
+								'PROPOSALS_PAGE.REGISTER.JOB_POST_URL'
+									| translate
+							}}"
+							formControlName="jobPostUrl"
+							autocomplete="on"
+						/>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label class="label"
+							>{{
+								'PROPOSALS_PAGE.REGISTER.PROPOSAL_DATE'
+									| translate
+							}}
+						</label>
+						<input
+							formControlName="valueDate"
+							nbInput
+							fullWidth
+							placeholder="{{
+								'PROPOSALS_PAGE.REGISTER.PROPOSAL_DATE'
+									| translate
+							}}"
+							[nbDatepicker]="formpicker"
+						/>
+						<nb-datepicker
+							[min]="minDate"
+							#formpicker
+						></nb-datepicker>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<ga-tags-color-input
+						[selectedTags]="tags"
+						(selectedTagsEvent)="selectedTagsEvent($event)"
+						[isOrgLevel]="true"
+					>
+					</ga-tags-color-input>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xl-6">
+					<nb-card>
+						<nb-card-header>
+							{{
+								'PROPOSALS_PAGE.REGISTER.JOB_POST_CONTENT'
+									| translate
+							}}
+						</nb-card-header>
+						<nb-card-body>
+							<ckeditor
+								formControlName="jobPostContent"
+								[config]="ckConfig"
+							>
+							</ckeditor>
+						</nb-card-body>
+					</nb-card>
+				</div>
+				<div div class="col-xl-6">
+					<nb-card>
+						<nb-card-header>
+							{{
+								'PROPOSALS_PAGE.REGISTER.PROPOSALS_CONTENT'
+									| translate
+							}}
+						</nb-card-header>
+						<nb-card-body>
+							<ckeditor
+								formControlName="proposalContent"
+								[config]="ckConfig"
+							></ckeditor>
+						</nb-card-body>
+					</nb-card>
+				</div>
+			</div>
+		</form>
+	</nb-card-body>
+	<nb-card-footer class="text-right">
+		<button
+			[disabled]="form.invalid"
+			(click)="registerProposal()"
+			class="register-btn"
+			status="success"
+			nbButton
+		>
+			{{ 'PROPOSALS_PAGE.REGISTER.REGISTER_PROPOSALS' | translate }}
+		</button>
+	</nb-card-footer>
+</nb-card>

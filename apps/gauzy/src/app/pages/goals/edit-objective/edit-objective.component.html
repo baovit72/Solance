@@ -1,0 +1,51 @@
+<nb-card size="large" class="max-width-50vw">
+    <nb-card-header>
+        {{ (!!data ? 'GOALS_PAGE.EDIT_OBJECTIVE' : 'GOALS_PAGE.ADD_NEW_OBJECTIVE' ) | translate }}
+        <nb-icon class="ml-auto mt-1 close" icon="close-outline" (click)="closeDialog()"></nb-icon>
+    </nb-card-header>
+
+    <nb-card-body>
+        <form [formGroup]="objectiveForm">
+            <div class="row">
+                <div class="col-md-12" (mouseleave)="helperText = ''">
+                    <label for="objective-title" class="label">
+						{{ 'FORM.LABELS.NAME' | translate }}
+					</label>
+                    <input type="text" id="objective-title" nbInput fullWidth formControlName="name" placeholder="{{
+							'GOALS_PAGE.FORM.PLACEHOLDERS.NAME' | translate
+						}}" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12" (mouseleave)="helperText = ''">
+                    <label for="objective-description" class="label mt-3">
+						{{ 'FORM.LABELS.DESCRIPTION_OPTIONAL' | translate }}
+					</label>
+                    <textarea id="objective-description" nbInput fullWidth formControlName="description" placeholder="{{
+							'GOALS_PAGE.FORM.PLACEHOLDERS.DESCRIPTION'
+								| translate
+						}}"></textarea>
+                </div>
+
+            </div>
+
+
+        </form>
+    </nb-card-body>
+    <nb-card-footer class="text-right">
+        <button class="mr-3" nbButton (click)="closeDialog()">
+			{{ 'BUTTONS.CANCEL' | translate }}
+		</button>
+        <button nbButton [disabled]="
+				!objectiveForm.valid || !hideOrg
+					? false
+					: this.objectiveForm.value.level ===
+					  goalLevelEnum.ORGANIZATION
+					? true
+					: false
+			" status="success" (click)="saveObjective()">
+			{{ 'BUTTONS.SAVE' | translate }}
+		</button>
+    </nb-card-footer>
+</nb-card>

@@ -1,0 +1,108 @@
+<div
+	class="header-container"
+	[class.left]="position === 'normal'"
+	[class.right]="position === 'inverse'"
+>
+	<div class="logo-container">
+		<a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+			<nb-icon icon="menu-2-outline"></nb-icon>
+		</a>
+
+		<div
+			*ngIf="theme === 'default' || theme === 'corporate'; else whiteLogo"
+			class="logo"
+			(click)="navigateHome()"
+		>
+			<img style="width:50px;" src="assets/images/logos/solance_logo.png" />
+		</div>
+		<ng-template #whiteLogo>
+			<img style="width:50px;" src="assets/images/logos/solance_logo.png" />
+		</ng-template>
+	</div>
+</div>
+
+<div class="header-container">
+	<nb-actions
+		size="small"
+		[class.left]="position === 'normal'"
+		[class.right]="position === 'inverse'"
+	>
+		<nb-action
+			*ngIf="showOrganizationsSelector"
+			class="show-large-up organization-selector-container"
+		>
+			<ga-organization-selector
+				class="header-selector organization-selector"
+			></ga-organization-selector>
+		</nb-action>
+
+		<nb-action
+			icon="options-2-outline"
+			class="toggle-layout"
+			class="show-large-down"
+			(click)="toggleExtraActions()"
+		></nb-action>
+	 
+		<nb-action
+			*ngIf="user?.employee?.id"
+			class="timer-action"
+			(click)="isElectron ? '' : toggleTimerWindow()"
+		>
+			<nb-icon class="mr-3" icon="clock-outline"></nb-icon>
+			{{ timerDuration }}
+		</nb-action>
+
+		<nb-action
+			icon="settings-2-outline"
+			class="toggle-layout"
+			(click)="toggleSettings()"
+		></nb-action>
+	</nb-actions>
+</div>
+
+<div
+	(window:resize)="closeExtraActionsIfLarge($event)"
+	class="extra-actions"
+	*ngIf="showExtraActions"
+>
+	<div>
+		<h6>{{ 'HEADER.SELECT_PROJECT' | translate }}</h6>
+	</div>
+
+	<ga-project-selector
+		*ngIf="showProjectsSelector"
+		class="header-selector project-selector"
+	>
+	</ga-project-selector>
+
+	<div>
+		<h6>{{ 'HEADER.SELECT_EMPLOYEE' | translate }}</h6>
+	</div>
+
+	<ga-employee-selector
+		*ngIf="showEmployeesSelector"
+		class="header-selector employee-selector"
+	></ga-employee-selector>
+
+	<div>
+		<h6>{{ 'HEADER.SELECT_A_DATE' | translate }}</h6>
+	</div>
+
+	<ga-date-selector
+		*ngIf="showDateSelector && showExtraActions"
+		class="date-selector"
+	></ga-date-selector>
+
+	<div>
+		<h6>{{ 'HEADER.SELECT_AN_ORGANIZATION' | translate }}</h6>
+	</div>
+
+	<ga-organization-selector
+		*ngIf="showOrganizationsSelector"
+		class="header-selector organization-selector"
+	></ga-organization-selector>
+</div>
+
+<ng-template [ngIf]="user?.employee?.id">
+	<ngx-time-tracker></ngx-time-tracker>
+</ng-template>
